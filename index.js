@@ -1,20 +1,25 @@
-var express = require('express');
-var app = express();
+const Telegram = require('telegram-node-bot')
+const TelegramBaseController = Telegram.TelegramBaseController
+const TextCommand = Telegram.TextCommand
+const tg = new Telegram.Telegram('296566982:AAFINIto8fY9LGKenota04sPWZ4ZA7oPYgk')
 
-app.set('port', (process.env.PORT || 5000));
+class PingController extends TelegramBaseController {
+    /**
+     * @param {Scope} $
+     */
+    pingHandler($) {
+        $.sendMessage('pong')
+    }
 
-app.use(express.static(__dirname + '/public'));
+    get routes() {
+        return {
+            'pingCommand': 'pingHandler'
+        }
+    }
+}
 
-// views is directory for all template files
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-
-app.get('/', function(request, response) {
-  response.render('pages/index');
-});
-
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});
-
-
+tg.router
+    .when(
+        new TextCommand('ping', 'pingCommand'),
+        new PingController()
+)
